@@ -1,0 +1,10 @@
+{
+    "name": "moodle-availability_mentor-form",
+    "builds": {
+      "moodle-availability_mentor-form": {
+        "jsfiles": [
+          "form.js"
+        ]
+      }
+    }
+  }
