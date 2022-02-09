@@ -72,9 +72,29 @@ class condition extends \core_availability\condition {
         $allow = true;
         $enrolled = is_enrolled($context, $userid, '', true);
 
+        if (!has_capability('moodle/site:accessallgroups', $context, $userid)) {
+            // Get all groups the user belongs to.
+            $groups = $info->get_modinfo()->get_groups();
+            if ($this->groupid) {
+                $allow = in_array($this->groupid, $groups);
+            } else {
+                // No specific group. Allow if they belong to any group at all.
+                $allow = $groups ? true : false;
+            }
+
+            // The NOT condition applies before accessallgroups (i.e. if you
+            // set something to be available to those NOT in group X,
+            // people with accessallgroups can still access it even if
+            // they are in group X).
+            if ($not) {
+                $allow = !$allow;
+            }
+        }
+        
         if (!$enrolled) { // Assume that mentors are not enrolled in the course.
             $allow = $this->get_mentors_mentee($userid, $info);
         }
+
 
         return $allow;
     }
